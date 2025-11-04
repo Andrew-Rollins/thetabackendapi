@@ -10,6 +10,8 @@ public class boardPost {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idboardposts;
     
+
+    //these four varibles match what the app is expecting
     @Column(name = "title", nullable = false, length = 45)
     private String title;
     
@@ -22,7 +24,7 @@ public class boardPost {
     @Column(name = "date", nullable = false, length = 45)
     private String date;  
     
-
+    //constructors
     public boardPost() {}
     
     public boardPost(String title, String body, String author, String date) {
@@ -33,6 +35,7 @@ public class boardPost {
         this.date = date;
     }
     
+    //getters and setters
 
     //public Long getId() {
    //     return id;

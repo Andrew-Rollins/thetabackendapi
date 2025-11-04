@@ -9,7 +9,7 @@ import java.util.List;
 public class boardPostService {
     @Autowired
     private boardPostRepository postRepository; 
-    
+    //basic testing functions to see if database is connected
     public List<boardPost> getAllPosts() {
         return postRepository.findAll();  
     }

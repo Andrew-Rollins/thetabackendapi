@@ -3,7 +3,7 @@ import com.tx.thetabackendapi.model.boardPost;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-
+//boilerplate
 @Repository
 public interface boardPostRepository extends JpaRepository<boardPost, Integer> {
     
