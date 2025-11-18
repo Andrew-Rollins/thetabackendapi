@@ -1,10 +1,9 @@
 package com.tx.thetabackendapi.repository;
-import com.tx.thetabackendapi.model.boardPost;
+
+import com.tx.thetabackendapi.model.user;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-//boilerplate
 @Repository
-public interface boardPostRepository extends JpaRepository<boardPost, Integer> {
-    
+public interface userRepository extends JpaRepository<user, Integer> {
 }
