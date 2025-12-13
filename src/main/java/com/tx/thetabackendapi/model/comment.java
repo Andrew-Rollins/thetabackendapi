@@ -20,6 +20,7 @@ public class comment {
     CONSTRAINT `comments_ibfk_2` FOREIGN KEY (`poster_id`) REFERENCES `users` (`user_id`) ON DELETE SET NULL
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
     */
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_id")
@@ -31,7 +32,7 @@ public class comment {
     private String content;
     @Column(name = "date_posted")
     private LocalDateTime datePosted = LocalDateTime.now();
-    
+    //TODO: connect to boardapi
     public comment() {}
     //get
     public Integer getCommentId() { return commentId; }

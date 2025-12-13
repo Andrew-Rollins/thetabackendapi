@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class ThetabackendapiApplication {
-	//more boilerplate
+	//This is our entry point
 	public static void main(String[] args) {
 		SpringApplication.run(ThetabackendapiApplication.class, args);
 	}
