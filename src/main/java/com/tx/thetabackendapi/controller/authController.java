@@ -28,48 +28,29 @@ import java.time.LocalDateTime;
 @RestController
 @RequestMapping("/api/auth")
 public class authController {
-
     private final AuthenticationManager authenticationManager;
     private final UserDetailsService userDetailsService;
     private final jwtUtil jwtUtil;
     private final userRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public authController(
-            AuthenticationManager authenticationManager,
-            UserDetailsService userDetailsService,
-            jwtUtil jwtUtil,
-            userRepository userRepository,
-            PasswordEncoder passwordEncoder
-    ) {
+    public authController(AuthenticationManager authenticationManager,UserDetailsService userDetailsService,jwtUtil jwtUtil,userRepository userRepository,PasswordEncoder passwordEncoder) {
         this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
         this.jwtUtil = jwtUtil;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
-
     @PostMapping("/login")
     public ResponseEntity<authResponse> login(@Valid @RequestBody loginRequest request) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.username(),request.password()));
-
             UserDetails userDetails = userDetailsService.loadUserByUsername(request.username());
-            user appUser = userRepository.findByUsername(request.username())
-                    .orElseThrow(() -> new BadCredentialsException("User not found"));
-
+            user appUser = userRepository.findByUsername(request.username()).orElseThrow(() -> new BadCredentialsException("User not found"));
             String token = jwtUtil.buildToken(userDetails, appUser.getUserId(), appUser.getRole());
-
-            return ResponseEntity.ok(authResponse.success(
-                    token,
-                    appUser.getUsername(),
-                    appUser.getUserId(),
-                    appUser.getRole()
-            ));
-
+            return ResponseEntity.ok(authResponse.success(token,appUser.getUsername(),appUser.getUserId(),appUser.getRole()));
         } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(authResponse.error("Invalid username or password"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(authResponse.error("Invalid username or password"));
         }
     }
 
@@ -79,7 +60,6 @@ public class authController {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(authResponse.error("Username already exists"));
         }
-
         if (userRepository.existsByEmail(request.email())) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(authResponse.error("Email already exists"));
@@ -97,17 +77,10 @@ public class authController {
         UserDetails userDetails = userDetailsService.loadUserByUsername(savedUser.getUsername());
         String token = jwtUtil.buildToken(userDetails, savedUser.getUserId(), savedUser.getRole());
 
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(authResponse.registered(
-                        token,
-                        savedUser.getUsername(),
-                        savedUser.getUserId(),
-                        savedUser.getRole()
-                ));
+        return ResponseEntity.status(HttpStatus.CREATED).body(authResponse.registered(token,savedUser.getUsername(),savedUser.getUserId(),savedUser.getRole()));
     }
     @GetMapping("/validate")
     public ResponseEntity<Boolean> sessionValid(@AuthenticationPrincipal UserDetails userDetails) {
-
         if (userDetails != null) {
             return ResponseEntity.ok(true);
         }

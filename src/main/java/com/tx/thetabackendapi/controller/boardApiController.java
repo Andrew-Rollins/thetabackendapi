@@ -104,7 +104,7 @@ public class boardApiController {
      * Retrieves all posts for a board. User must have at least read access.
      */
     @GetMapping("/{boardId}/posts")
-    public ResponseEntity<List<boardPostData>> getAllPostsForBoard(@AuthenticationPrincipal UserDetails userDetails,@PathVariable Integer boardId ) {
+    public ResponseEntity<List<boardPostData>> getAllPostsForBoard(@AuthenticationPrincipal UserDetails userDetails,@PathVariable("boardId") Integer boardId ) {
         user currentUser = getCurrentUser(userDetails);
         boardAccess priv = getUserBoardAccess(currentUser.getUserId(), boardId);
         if (priv == null) {
@@ -136,7 +136,7 @@ public class boardApiController {
     }
 
     @GetMapping("/{boardId}/members")
-    public ResponseEntity<List<userData>> getAllMembersForBoard(@AuthenticationPrincipal UserDetails userDetails,@PathVariable Integer boardId) {
+    public ResponseEntity<List<userData>> getAllMembersForBoard(@AuthenticationPrincipal UserDetails userDetails,@PathVariable("boardId") Integer boardId) {
         user currentUser = getCurrentUser(userDetails);
         boardAccess access = getUserBoardAccess(currentUser.getUserId(), boardId);
         if (access == null) {
@@ -174,7 +174,7 @@ public class boardApiController {
 
 
     @PostMapping("/{boardId}/post")
-    public ResponseEntity<Boolean> postOnBoard(@AuthenticationPrincipal UserDetails userDetails,@PathVariable Integer boardId,@RequestBody postData request) {
+    public ResponseEntity<Boolean> postOnBoard(@AuthenticationPrincipal UserDetails userDetails,@PathVariable("boardId") Integer boardId,@RequestBody postData request) {
         user currentUser = getCurrentUser(userDetails);
         boardAccess access = getUserBoardAccess(currentUser.getUserId(), boardId);
         if (access == null || !getPriv(access.getAccessLevel(), "post")) {
@@ -192,7 +192,7 @@ public class boardApiController {
 
 
     @PostMapping("/{boardId}/kick")
-    public ResponseEntity<Boolean> kickUser(@AuthenticationPrincipal UserDetails userDetails,@PathVariable Integer boardId,@RequestBody kickUserReq request) {
+    public ResponseEntity<Boolean> kickUser(@AuthenticationPrincipal UserDetails userDetails,@PathVariable("boardId") Integer boardId,@RequestBody kickUserReq request) {
         user currentUser = getCurrentUser(userDetails);
         boardAccess access = getUserBoardAccess(currentUser.getUserId(), boardId);
         if (access == null || !getPriv(access.getAccessLevel(), "moderate")) {
@@ -217,7 +217,7 @@ public class boardApiController {
     }
 
     @PostMapping("/{boardId}/invite")
-    public ResponseEntity<inviteRes> inviteUser(@AuthenticationPrincipal UserDetails userDetails,@PathVariable Integer boardId,@RequestBody(required = false) inviteUserReq request) {
+    public ResponseEntity<inviteRes> inviteUser(@AuthenticationPrincipal UserDetails userDetails,@PathVariable("boardId") Integer boardId,@RequestBody(required = false) inviteUserReq request) {
         user currentUser = getCurrentUser(userDetails);
         boardAccess access = getUserBoardAccess(currentUser.getUserId(), boardId);
         if (access == null || !getPriv(access.getAccessLevel(), "moderate")) {
@@ -239,7 +239,7 @@ public class boardApiController {
     }
     //this is broken atm on the app side
     @PostMapping("/leave/{boardId}")
-    public ResponseEntity<Boolean> leaveBoard(@AuthenticationPrincipal UserDetails userDetails,@PathVariable Integer boardId) {
+    public ResponseEntity<Boolean> leaveBoard(@AuthenticationPrincipal UserDetails userDetails,@PathVariable("boardId") Integer boardId) {
         user currentUser = getCurrentUser(userDetails);
         boardAccess access = getUserBoardAccess(currentUser.getUserId(), boardId);
         if (access == null) {
