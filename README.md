@@ -2,8 +2,6 @@
 
 This is a backend for the android app https://github.com/a73s/Theta-Board
 
-As of now it is very barebones and is more of a POC of connecting a MySQL server to an API using Spring Boot.
-
 # Important notes and setup
 
 First start a MySQL server and add the example table using this command.
@@ -145,10 +143,4 @@ You MUST fill out application.properties in src/resources
 
 Now you can start the application.
 
-Example test commands to show getting and submitting data.
-```
-Invoke-RestMethod -Uri "http://localhost:8080/api/posts" -Method Get
-```
-```
-Invoke-RestMethod -Uri "http://localhost:8080/api/posts" -Method Post -Headers @{"Content-Type"="application/json"} -Body '{"boardId":1,"posterId":1,"content":"Example"}'
-```
+Then build and use the android application to connect.
