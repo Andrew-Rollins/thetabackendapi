@@ -41,28 +41,27 @@ public class authController {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
+
     @PostMapping("/login")
     public ResponseEntity<authResponse> login(@Valid @RequestBody loginRequest request) {
         try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.username(),request.password()));
-            UserDetails userDetails = userDetailsService.loadUserByUsername(request.username());
-            user appUser = userRepository.findByUsername(request.username()).orElseThrow(() -> new BadCredentialsException("User not found"));
+            user appUser = userRepository.findByEmail(request.email()).orElseThrow(() -> new BadCredentialsException("User not found"));
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(appUser.getUsername(),request.password()));
+            UserDetails userDetails = userDetailsService.loadUserByUsername(appUser.getUsername());
             String token = jwtUtil.buildToken(userDetails, appUser.getUserId(), appUser.getRole());
             return ResponseEntity.ok(authResponse.success(token,appUser.getUsername(),appUser.getUserId(),appUser.getRole()));
         } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(authResponse.error("Invalid username or password"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(authResponse.error("Invalid email or password"));
         }
     }
 
     @PostMapping("/register")
     public ResponseEntity<authResponse> register(@Valid @RequestBody registerRequest request) {
         if (userRepository.existsByUsername(request.username())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(authResponse.error("Username already exists"));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(authResponse.error("Username already exists"));
         }
         if (userRepository.existsByEmail(request.email())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(authResponse.error("Email already exists"));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(authResponse.error("Email already exists"));
         }
 
         user newUser = new user();
@@ -71,12 +70,9 @@ public class authController {
         newUser.setPasswordHash(passwordEncoder.encode(request.password()));
         newUser.setRole("base");
         newUser.setDateCreated(LocalDateTime.now());
-
         user savedUser = userRepository.save(newUser);
-
         UserDetails userDetails = userDetailsService.loadUserByUsername(savedUser.getUsername());
         String token = jwtUtil.buildToken(userDetails, savedUser.getUserId(), savedUser.getRole());
-
         return ResponseEntity.status(HttpStatus.CREATED).body(authResponse.registered(token,savedUser.getUsername(),savedUser.getUserId(),savedUser.getRole()));
     }
     @GetMapping("/validate")

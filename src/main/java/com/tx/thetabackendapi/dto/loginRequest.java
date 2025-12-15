@@ -4,8 +4,9 @@ import jakarta.validation.constraints.NotBlank;
 
 
 public record loginRequest(
-        @NotBlank(message = "No username")
-        String username,
-        @NotBlank(message = "No password")
-        String password
+    @NotBlank(message = "No email")
+    String email,
+    
+    @NotBlank(message = "Password is required")
+    String password
 ) {}

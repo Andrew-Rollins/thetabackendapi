@@ -83,14 +83,15 @@ public class boardApiController {
 
     //API STARTS
     //get
+
+    // /api/board/all
+    // requires authToken
+    // returns List<boardData>
     @GetMapping("/all")
-    public ResponseEntity<List<boardData>> getAllBoardsForUser(
-            @AuthenticationPrincipal UserDetails userDetails
-    ) {
+    public ResponseEntity<List<boardData>> getAllBoardsForUser(@AuthenticationPrincipal UserDetails userDetails) {
         user currentUser = getCurrentUser(userDetails);
         List<boardAccess> accessList = boardAccessRepository.findByUserId(currentUser.getUserId());
         List<boardData> boards = new ArrayList<>();
-
         for (boardAccess access : accessList) {
             boardRepository.findById(access.getBoardId()).ifPresent(b -> {
                 boards.add(new boardData(b.getBoardId(),b.getBoardName(),b.getBoardDesc(),access.getAccessLevel(),b.getCreatorId()));
@@ -99,10 +100,9 @@ public class boardApiController {
         return ResponseEntity.ok(boards);
     }
 
-    /**
-     * GET /api/board/{boardId}/posts
-     * Retrieves all posts for a board. User must have at least read access.
-     */
+    // api/board/{boardId}/posts
+    // requires authtoken
+    // returns List<boardPostData>
     @GetMapping("/{boardId}/posts")
     public ResponseEntity<List<boardPostData>> getAllPostsForBoard(@AuthenticationPrincipal UserDetails userDetails,@PathVariable("boardId") Integer boardId ) {
         user currentUser = getCurrentUser(userDetails);
@@ -134,7 +134,9 @@ public class boardApiController {
         }
         return ResponseEntity.ok(postInfoList);
     }
-
+    // /api/board/{boardId}/members
+    // requires authtoken
+    // returns List<userData>
     @GetMapping("/{boardId}/members")
     public ResponseEntity<List<userData>> getAllMembersForBoard(@AuthenticationPrincipal UserDetails userDetails,@PathVariable("boardId") Integer boardId) {
         user currentUser = getCurrentUser(userDetails);
@@ -150,12 +152,20 @@ public class boardApiController {
         }
         return ResponseEntity.ok(members);
     }
-
+    // /api/board/username
+    // requires authtoken
+    // returns username as a string
     @GetMapping("/username")
     public ResponseEntity<String> getDisplayName(@AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok(getCurrentUser(userDetails).getUsername());
     }
     //set
+
+    // /api/board/create
+    // requires authtoken
+    // boardName
+    // boardDescription
+    // returns boardData
     @PostMapping("/create")
     public ResponseEntity<boardData> createBoard(@AuthenticationPrincipal UserDetails userDetails, @RequestBody createBoardReq request) {
         user currentUser = getCurrentUser(userDetails);
@@ -171,8 +181,11 @@ public class boardApiController {
         boardAccessRepository.save(access);
         return ResponseEntity.ok(new boardData(savedBoard.getBoardId(), savedBoard.getBoardName(), savedBoard.getBoardDesc(), "moderate",savedBoard.getCreatorId()));
     }
-
-
+    // todo fix database structure to add seperate field
+    // /api/board/{boardId}/post
+    // requires authtoken
+    // postData(title,description) seperated by ||| 
+    // returns boolean
     @PostMapping("/{boardId}/post")
     public ResponseEntity<Boolean> postOnBoard(@AuthenticationPrincipal UserDetails userDetails,@PathVariable("boardId") Integer boardId,@RequestBody postData request) {
         user currentUser = getCurrentUser(userDetails);
@@ -190,7 +203,10 @@ public class boardApiController {
         return ResponseEntity.ok(true);
     }
 
-
+    // /api/board/{boardId}/kick
+    // requires authtoken
+    // email
+    // returns boolean
     @PostMapping("/{boardId}/kick")
     public ResponseEntity<Boolean> kickUser(@AuthenticationPrincipal UserDetails userDetails,@PathVariable("boardId") Integer boardId,@RequestBody kickUserReq request) {
         user currentUser = getCurrentUser(userDetails);
@@ -215,7 +231,9 @@ public class boardApiController {
         boardAccessRepository.delete(targetAccess);
         return ResponseEntity.ok(true);
     }
-
+    // /api/board/{boardId}/invite
+    // requires authtoken
+    // returns inviteRes
     @PostMapping("/{boardId}/invite")
     public ResponseEntity<inviteRes> inviteUser(@AuthenticationPrincipal UserDetails userDetails,@PathVariable("boardId") Integer boardId,@RequestBody(required = false) inviteUserReq request) {
         user currentUser = getCurrentUser(userDetails);
@@ -249,7 +267,10 @@ public class boardApiController {
         return ResponseEntity.ok(true);
     }
 
-
+    // /api/board/join
+    // requires authtoken
+    // joinCode
+    // returns boolean
     @PostMapping("/join")
     public ResponseEntity<Boolean> joinBoard(@AuthenticationPrincipal UserDetails userDetails,@RequestBody joinBoardReq request) {
         user currentUser = getCurrentUser(userDetails);
@@ -274,7 +295,10 @@ public class boardApiController {
         boardAccessRepository.save(newAccess);
         return ResponseEntity.ok(true);
     }
-
+    // /api/board/username
+    // requires authtoken
+    // displayName
+    // returns boolean
     @PostMapping("/username")
     public ResponseEntity<Boolean> setDisplayName(@AuthenticationPrincipal UserDetails userDetails, @RequestBody setUsernameReq request) {
         user currentUser = getCurrentUser(userDetails);
@@ -286,7 +310,4 @@ public class boardApiController {
         userRepository.save(currentUser);
         return ResponseEntity.ok(true);
     }
-
-
-
 }
